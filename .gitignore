@@ -1,0 +1,8 @@
+# Dependencies
+node_modules/
+
+# Build output (intermediate files)
+dist/
+
+# Keep deployment artifacts in deploy folder
+# deploy/ folder is committed to track deployment-ready files

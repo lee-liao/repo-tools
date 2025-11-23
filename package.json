@@ -1,0 +1,33 @@
+{
+    "name": "snippets-lib",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc",
+        "bundle": "npm run bundle:get_snippet && npm run bundle:download_repo",
+        "bundle:get_snippet": "npx esbuild get_snippet.ts --bundle --platform=node --outfile=dist/get_snippet.js",
+        "bundle:download_repo": "npx esbuild download_repo.ts --bundle --platform=node --outfile=dist/download_repo.js",
+        "prepare-deploy": "npm run bundle && powershell -Command \"Copy-Item -Path dist/download_repo.js -Destination deploy/ -Force; Copy-Item -Path dist/get_snippet.js -Destination deploy/ -Force; Copy-Item -Path SKILL.md -Destination deploy/ -Force\"",
+        "deploy": "npm run prepare-deploy && powershell -Command \"Copy-Item -Path deploy/* -Destination 'C:\\Users\\liao_\\.claude\\skills\\repo-tools\\' -Force\"",
+        "start": "node dist/index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.22.0",
+        "@types/adm-zip": "^0.5.7",
+        "@types/node": "^24.10.1",
+        "adm-zip": "^0.5.16",
+        "axios": "^1.13.2",
+        "commander": "^14.0.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3",
+        "zod": "^4.1.12"
+    },
+    "devDependencies": {
+        "esbuild": "^0.27.0"
+    }
+}
