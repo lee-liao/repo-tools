@@ -1,0 +1,45 @@
+{
+    "name": "repo-tools",
+    "displayName": "Repository Tools",
+    "description": "Download files and repositories from GitHub",
+    "version": "1.0.1",
+    "publisher": "local",
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "repo-tools.getSnippet",
+                "title": "Repo Tools: Download File from Repository"
+            },
+            {
+                "command": "repo-tools.downloadRepo",
+                "title": "Repo Tools: Download Entire Repository"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "package": "vsce package"
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.1",
+        "@types/vscode": "^1.80.0",
+        "typescript": "^5.9.3",
+        "@vscode/vsce": "^3.0.0"
+    },
+    "dependencies": {
+        "axios": "^1.13.2",
+        "adm-zip": "^0.5.16"
+    }
+}
