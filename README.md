@@ -12,7 +12,7 @@ Downloads a specific file from a repository.
 
 **Test Command:**
 ```bash
-node dist/get_snippet.js --owner microsoft --repo vscode --path README.md --dest ./test-output
+node deploy/get_snippet.js --owner microsoft --repo vscode --path README.md --dest ./test-output
 ```
 
 **Parameters:**
@@ -28,7 +28,7 @@ Downloads and extracts an entire repository.
 
 **Test Command:**
 ```bash
-node dist/download_repo.js --owner microsoft --repo vscode-docs --dest ./test-repo
+node deploy/download_repo.js --owner microsoft --repo vscode-docs --dest ./test-repo
 ```
 
 **Parameters:**
@@ -41,34 +41,50 @@ node dist/download_repo.js --owner microsoft --repo vscode-docs --dest ./test-re
 
 ```
 repo-tools/
-├── dist/                    # Compiled JavaScript files
-│   ├── download_repo.js
-│   ├── get_snippet.js
-│   └── index.js            # MCP server
+├── deploy/                  # Deployment-ready bundled files
+│   ├── download_repo.js     # Bundled (643 KB, all dependencies included)
+│   ├── get_snippet.js       # Bundled (546 KB, all dependencies included)
+│   ├── SKILL.md             # Skill documentation
+│   └── README.md            # Deployment instructions
+├── dist/                    # Build output (ignored by git)
+│   ├── download_repo.js     # Bundled version
+│   ├── get_snippet.js       # Bundled version
+│   └── *.d.ts, *.map        # TypeScript artifacts
 ├── download_repo.ts         # TypeScript source
 ├── get_snippet.ts           # TypeScript source
-├── index.ts                 # MCP server source
-├── package.json
-├── tsconfig.json
+├── index.ts                 # MCP server source (optional)
+├── package.json             # Dependencies and scripts
+├── tsconfig.json            # TypeScript configuration
+├── .gitignore               # Ignores node_modules/ and dist/
 ├── SKILL.md                 # Skill documentation
-└── README.md               # This file
+├── README.md                # This file
+└── RECOVERY_COMPLETE.md     # Recovery process documentation
 ```
+
+## NPM Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run bundle` - Create bundled standalone JS files with esbuild
+- `npm run prepare-deploy` - Bundle and copy to deploy/ folder
+- `npm run deploy` - Deploy to Claude skills directory
+
 
 ## Testing Steps
 
 1. **Test Single File Download:**
    ```bash
-   node dist/get_snippet.js --owner DrLinAITeam2 --repo for-test-github-app --path openspec/project.md
+   node deploy/get_snippet.js --owner DrLinAITeam2 --repo for-test-github-app --path openspec/project.md
    ```
 
 2. **Test Repository Download:**
    ```bash
-   node dist/download_repo.js --owner DrLinAITeam2 --repo for-test-github-app --dest ./test-download
+   node deploy/download_repo.js --owner DrLinAITeam2 --repo for-test-github-app --dest ./test-download
    ```
 
-3. **Test MCP Server (for Claude Desktop):**
-   - The MCP server is in `dist/index.js`
-   - Configure in Claude Desktop's `claude_desktop_config.json`
+3. **Deploy to Claude Skills:**
+   ```bash
+   npm run deploy
+   ```
 
 ## API Endpoint
 - Base URL: `http://103.98.213.149:8510/`
