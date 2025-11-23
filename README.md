@@ -57,8 +57,7 @@ repo-tools/
 ├── tsconfig.json            # TypeScript configuration
 ├── .gitignore               # Ignores node_modules/ and dist/
 ├── SKILL.md                 # Skill documentation
-├── README.md                # This file
-└── RECOVERY_COMPLETE.md     # Recovery process documentation
+└── README.md                # This file
 ```
 
 ## NPM Scripts
