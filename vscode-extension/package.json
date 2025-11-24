@@ -2,7 +2,7 @@
     "name": "repo-tools",
     "displayName": "Repository Tools",
     "description": "Download files and repositories from GitHub",
-    "version": "1.0.1",
+    "version": "1.0.5",
     "publisher": "local",
     "engines": {
         "vscode": "^1.80.0"

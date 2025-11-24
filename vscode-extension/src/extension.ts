@@ -8,16 +8,22 @@ import * as os from 'os';
 export function activate(context: vscode.ExtensionContext) {
     console.log('Repository Tools extension is now active');
 
+    // Debug: Show notification when extension loads
+    vscode.window.showInformationMessage('Repo Tools extension loaded successfully!');
+
     // Register get snippet command
     let getSnippetCmd = vscode.commands.registerCommand('repo-tools.getSnippet', async () => {
+        console.log('repo-tools.getSnippet command executed');
         await getSnippet();
     });
 
     // Register download repo command
     let downloadRepoCmd = vscode.commands.registerCommand('repo-tools.downloadRepo', async () => {
+        console.log('repo-tools.downloadRepo command executed');
         await downloadRepo();
     });
 
+    console.log('Commands registered: repo-tools.getSnippet, repo-tools.downloadRepo');
     context.subscriptions.push(getSnippetCmd, downloadRepoCmd);
 }
 
@@ -51,6 +57,28 @@ async function getSnippet() {
             value: 'main'
         });
 
+        // Get workspace root
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showErrorMessage('Please open a project folder first.');
+            return;
+        }
+        const workspaceRoot = workspaceFolders[0].uri.fsPath;
+
+        // Ask for destination folder
+        const relativeFolder = await vscode.window.showInputBox({
+            prompt: 'Destination folder (relative to project root)',
+            placeHolder: 'e.g., src/components (leave empty for root)',
+            value: ''
+        });
+        if (relativeFolder === undefined) return;
+
+        const destFolder = path.join(workspaceRoot, relativeFolder);
+        const destPath = path.join(destFolder, path.basename(filePath));
+
+        // Ensure directory exists
+        fs.mkdirSync(destFolder, { recursive: true });
+
         // Show progress
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
@@ -77,22 +105,6 @@ async function getSnippet() {
 
             // Decode base64 content
             const decodedContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
-
-            // Get workspace folder or ask for destination
-            let destPath: string;
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-
-            if (workspaceFolders && workspaceFolders.length > 0) {
-                const workspaceRoot = workspaceFolders[0].uri.fsPath;
-                destPath = path.join(workspaceRoot, path.basename(filePath));
-            } else {
-                const uri = await vscode.window.showSaveDialog({
-                    defaultUri: vscode.Uri.file(path.basename(filePath)),
-                    filters: { 'All Files': ['*'] }
-                });
-                if (!uri) return;
-                destPath = uri.fsPath;
-            }
 
             // Write file
             fs.writeFileSync(destPath, decodedContent, 'utf-8');
@@ -132,23 +144,23 @@ async function downloadRepo() {
             value: 'main'
         });
 
-        // Get destination folder
+        // Get workspace root
         const workspaceFolders = vscode.workspace.workspaceFolders;
-        let destPath: string;
-
-        if (workspaceFolders && workspaceFolders.length > 0) {
-            const workspaceRoot = workspaceFolders[0].uri.fsPath;
-            destPath = path.join(workspaceRoot, repo);
-        } else {
-            const uri = await vscode.window.showOpenDialog({
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-                openLabel: 'Select Destination Folder'
-            });
-            if (!uri || uri.length === 0) return;
-            destPath = path.join(uri[0].fsPath, repo);
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showErrorMessage('Please open a project folder first.');
+            return;
         }
+        const workspaceRoot = workspaceFolders[0].uri.fsPath;
+
+        // Ask for destination folder
+        const relativeFolder = await vscode.window.showInputBox({
+            prompt: 'Destination folder (relative to project root)',
+            placeHolder: 'e.g., libs (leave empty for root)',
+            value: ''
+        });
+        if (relativeFolder === undefined) return;
+
+        const destPath = path.join(workspaceRoot, relativeFolder, repo);
 
         // Show progress
         await vscode.window.withProgress({
@@ -221,15 +233,7 @@ async function downloadRepo() {
 
                 vscode.window.showInformationMessage(`Repository downloaded to ${destPath}`);
 
-                // Ask to open folder
-                const openFolder = await vscode.window.showInformationMessage(
-                    'Repository downloaded successfully. Open folder?',
-                    'Yes', 'No'
-                );
 
-                if (openFolder === 'Yes') {
-                    await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(destPath), false);
-                }
 
             } catch (error) {
                 fs.rmSync(tempDir, { recursive: true, force: true });

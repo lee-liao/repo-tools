@@ -10,6 +10,10 @@ vscode-extension/out/
 vscode-extension/*.vsix
 vscode-extension/package-lock.json
 
+# Temporary files
+vscode-extension/temp_extract/
+.claude/
+
 # Internal documentation (not for public)
 RECOVERY_COMPLETE.md
 
