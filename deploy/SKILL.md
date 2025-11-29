@@ -1,3 +1,8 @@
+---
+name: repo-tools
+description: Use when retrieving files from remote GitHub repositories, downloading entire repositories, or accessing content that doesn't exist locally - downloads individual files or complete repositories from owner/repo format with support for specific branches, tags, or commits
+---
+
 # Repository Tools
 
 ## Overview
